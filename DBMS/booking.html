@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #3498DB, #FFFFFF);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .booking-container {
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+            margin: 40px auto;
+        }
+        .booking-container h2 {
+            color: #3498DB;
+        }
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            font-weight: bold;
+            color: #01060a;
+        }
+        .input-group select, .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #3498DB;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .book-btn {
+            background: #3498DB;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .book-btn:hover {
+            background: #217dbb;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+<nav class="navbar">
+    <ul class="nav-links">
+        <button id="homer" style="background-color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        margin-right: 15px;
+        text-decoration: none;
+        transition: all 0.3s;"><a href="project1.html">Home</a></button>
+    </ul>
+</nav>
+
+    <div class="booking-container">
+        <h2>Book Your Transport</h2>
+        <form>
+            <!-- User Name Field -->
+            <div class="input-group">
+                <label for="userName">User Name</label>
+                <input type="text" id="userName" name="userName" required placeholder="Enter your name">
+            </div>
+
+            <!-- Mobile Number Field -->
+            <div class="input-group">
+                <label for="mobileNumber">Mobile Number</label>
+                <input type="tel" id="mobileNumber" name="mobileNumber" required pattern="[0-9]{10}" placeholder="Enter your mobile number">
+            </div>
+
+            <!-- Vehicle Type -->
+            <div class="input-group">
+                <label for="vehicleType">Vehicle Type</label>
+                <select id="vehicleType" name="vehicleType" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+
+            <!-- Capacity -->
+            <div class="input-group">
+                <label for="capacity">Capacity</label>
+                <input type="number" id="capacity" name="capacity" required>
+            </div>
+
+            <!-- From -->
+            <div class="input-group">
+                <label for="routeFrom">From</label>
+                <select id="routeFrom" name="routeFrom" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+
+            <!-- To -->
+            <div class="input-group">
+                <label for="routeTo">To</label>
+                <select id="routeTo" name="routeTo" required>
+                    <option value="">Loading...</option>
+                </select>
+            </div>
+
+            <!-- Payment Option -->
+            <div class="input-group">
+                <label for="paymentOption">Payment Option</label>
+                <select id="paymentOption" name="paymentOption" required>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="Cash on Delivery">Cash on Delivery</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="book-btn">Book Now</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to fetch data from API and populate dropdowns
+        async function fetchData(url, dropdownId) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log(`Fetched data from ${url}:`, data);
+
+                const dropdown = document.getElementById(dropdownId);
+                dropdown.innerHTML = "<option value=''>Select</option>";
+
+                data.forEach(item => {
+                    const option = document.createElement("option");
+                    option.value = item.City || item.Vehicle_type; // Adjust based on API response
+                    option.textContent = item.City || item.Vehicle_type;
+                    dropdown.appendChild(option);
+                });
+            } catch (error) {
+                console.error(`Error fetching data from ${url}:`, error);
+                document.getElementById(dropdownId).innerHTML = "<option value=''>Failed to load</option>";
+            }
+        }
+
+        // Fetch Vehicle Types
+        async function loadVehicleTypes() {
+            await fetchData("http://localhost:5000/api/vehicles", "vehicleType");
+        }
+
+        // Fetch Source Cities
+        async function loadSourceCities() {
+            await fetchData("http://localhost:5000/api/source", "routeFrom");
+        }
+
+        // Fetch Destination Cities
+        async function loadDestinationCities() {
+            await fetchData("http://localhost:5000/api/destination", "routeTo");
+        }
+
+        // Load data when page loads
+        window.onload = function() {
+            loadVehicleTypes();
+            loadSourceCities();
+            loadDestinationCities();
+        };
+
+        document.querySelector("form").addEventListener("submit", async function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Get form values
+        const userName = document.getElementById("userName").value;
+        const mobileNumber = document.getElementById("mobileNumber").value;
+        const vehicleType = document.getElementById("vehicleType").value;
+        const capacity = document.getElementById("capacity").value;
+        const routeFrom = document.getElementById("routeFrom").value;
+        const routeTo = document.getElementById("routeTo").value;
+        const paymentOption = document.getElementById("paymentOption").value;
+
+        // Prepare data object
+        const bookingData = {
+            userName,
+            mobileNumber,
+            vehicleType,
+            capacity,
+            routeFrom,
+            routeTo,
+            paymentOption
+        };
+
+        try {
+            // Send data to backend
+            const response = await fetch("http://localhost:5000/api/book", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(bookingData)
+            });
+
+            const result = await response.json();
+            alert(result.message); // Show success or error message
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to book transport.");
+        }
+    });
+    </script>
+
+</body>
+</html>

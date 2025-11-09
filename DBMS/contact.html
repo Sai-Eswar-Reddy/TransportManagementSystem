@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #3498DB, #FFFFFF);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #217dbb;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+        }
+
+        /* Contact Form */
+        .contact-container {
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+            margin: 40px auto;
+        }
+
+        .contact-container h2 {
+            color: #3498DB;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: #01060a;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #3498DB;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .contact-btn {
+            background: #3498DB;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .contact-btn:hover {
+            background: #217dbb;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <button id="homer" style="background-color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-right: 15px;
+            text-decoration: none;
+            transition: all 0.3s;">
+                <a href="project1.html">Home</a>
+            </button>
+        </ul>
+    </nav>
+
+    <!-- Contact Form -->
+    <div class="contact-container">
+        <h2>Contact Us</h2>
+        <form id="contactForm">
+            <div class="input-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="contact-btn">Send Message</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2025 TransitConnect. All Rights Reserved.</p>
+    </div>
+
+    <script>
+        document.getElementById("contactForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent page reload
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const message = document.getElementById("message").value;
+
+            const response = await fetch("http://localhost:5000/contact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, email, message })
+            });
+
+            const result = await response.json();
+            alert(result.message);
+
+            if (response.ok) {
+                document.getElementById("contactForm").reset(); // Clear form after success
+            }
+        });
+    </script>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2025 TransitConnect. All Rights Reserved.</p>
+    </div>
+
+</body>
+</html>
